@@ -276,6 +276,21 @@ function addCoins(fingerX, fingerY) {
     color(255, 153, 153), // 淡紅
     color(204, 153, 255)  // 淡紫
   ];
+
+  // 統計場上每個字的數量
+  let charCount = {};
+  for (let c of chars) charCount[c] = 0;
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      let cc = charGrid[i][j];
+      if (cc && charCount.hasOwnProperty(cc)) charCount[cc]++;
+    }
+  }
+  // 找出數量最少的字（可能有多個）
+  let minCount = Math.min(...chars.map(c => charCount[c]));
+  let candidates = chars.filter(c => charCount[c] === minCount);
+  let chosenChar = random(candidates);
+
   let x = floor(fingerX / size);
   let y = floor(fingerY / size);
   x = constrain(x, 0, cols-1);
@@ -283,7 +298,7 @@ function addCoins(fingerX, fingerY) {
   for (let j = 0; j < rows; j++) {
     if (grid[x][j] === 0) {
       grid[x][j] = (frameCount % 205) + 50;
-      charGrid[x][j] = chars[floor(random(chars.length))];
+      charGrid[x][j] = chosenChar;
       colorGrid[x][j] = random(candyColors);
       break;
     }
@@ -583,4 +598,3 @@ function endGameRender() {
     boxX + 20, boxY + 80, boxW - 60, boxH - 120 // 調整文字位置和寬度
   );
 }
-
